@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games</title>
+    <style>
+        /* 全局重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden; /* 防止水平滚动条 */
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        /* --- 背景 Canvas 样式 --- */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1; /* 确保在最底层 */
+            background-color: #111; /* 兜底背景色 */
+        }
+
+        /* --- 主内容容器 --- */
+        .main-container {
+            position: relative;
+            z-index: 1; /* 在 Canvas 之上 */
+            display: flex;
+            width: 90%; /* 留一些边距 */
+            max-width: 1400px;
+            margin: 50px auto;
+            gap: 30px; /* 左右栏间距 */
+            min-height: 80vh;
+        }
+
+        /* --- 通用半透明容器样式 --- */
+        .content-box {
+            /* 半透明白色背景，让下方的动画可见 */
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px); /* 可选：添加毛玻璃效果增加质感 */
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        /* --- 左栏样式 --- */
+        .left-column {
+            flex: 2; /* 左栏占 2/3 宽度 */
+            display: flex;
+            flex-direction: column;
+            gap: 25px; /* 上下区块间距 */
+            color: black;
+        }
+
+        /* 左栏上半部分：两个视频 */
+        .video-row {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .video-wrapper {
+            flex: 1;
+            aspect-ratio: 16 / 9; /* 保持视频比例 */
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .video-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* 左栏下半部分：五个图片 */
+        .image-row-five {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+/* 新增：现在 a 标签是排版的主角 */
+.image-row-five a {
+    flex: 1;        /* 平均分配空间 */
+    width: 0;       /* 关键：强制均分，防止图片原始尺寸撑开 */
+    display: block; /* 变为块级元素 */
+    overflow: hidden; /* 保证圆角和放大效果不溢出 */
+    border-radius: 6px; /* 圆角加在这里 */
+    cursor: pointer;    /* 鼠标变成小手 */
+}
+
+/* 修改：img 标签现在只需要负责填满 */
+.image-row-five a img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    aspect-ratio: 1 / 1; /* 保持正方形 */
+    object-fit: cover;   /* 裁剪填满 */
+    transition: transform 0.3s; /* 动画效果 */
+}
+
+/* 鼠标悬停时的放大效果 */
+.image-row-five a:hover img {
+    transform: scale(1.05);
+}
+
+
+        /* --- 右栏样式 --- */
+        .right-column {
+            flex: 1; /* 右栏占 1/3 宽度 */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column h2 {
+             margin-bottom: 15px;
+             text-align: center;
+             font-weight: lighter;
+        }
+
+        /* 右栏图片链接 */
+        .img-link {
+            display: block;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .img-link:hover {
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-5px);
+        }
+
+        .img-link img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .back-btn {
+            position: fixed; /* 固定定位 */
+            bottom: 5%;      /* 距离底部 5% */
+            right: 3%;       /* 距离右侧 3% */
+            
+            font-size: 3vw;  /* 大小根据视口宽度变化 (约等于屏幕宽度的3%) */
+            text-decoration: none; /* 去掉下划线 */
+            
+            z-index: 100;    /* 层级最高，确保浮在一切上面 */
+            cursor: pointer;
+            
+            /* 白色光晕效果 */
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6));
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        /* 鼠标悬停放大 */
+        .back-btn:hover {
+            transform: scale(1.3); /* 放大 1.3 倍 */
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 1)); /* 光晕变强 */
+        }
+
+        /* 手机端适配：避免太小看不清，设置一个最小尺寸 */
+        @media (max-width: 768px) {
+            .back-btn {
+                font-size: 3rem; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bgCanvas"></canvas>
+
+    <div class="main-container">
+        
+        <div class="left-column content-box">
+            <h3>my vedios</h3>
+         <div class="video-row">
+    <div class="video-wrapper">
+        <iframe 
+            src="https://www.youtube.com/embed/vUnwe3BpDXA" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    </div>
+    <div class="video-wrapper">
+        <iframe 
+            src="https://www.youtube.com/embed/UnjbEyzw-rY" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    </div>
+</div>
+
+            <h3>Rhythm Games</h3>
+            <div class="image-row-five">
+    <a href="https://rayark.com/g/cytus2/" target="_blank">
+        <img src="https://tse3.mm.bing.net/th/id/OIP.xYp8Dx293UKbgnHAiImVqQHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Pic 1">
+    </a>
+
+    <a href="http://cytus.ilongyuan.cn/" target="_blank">
+        <img src="https://assets-prd.ignimgs.com/2022/05/31/cytus-1654018270339.jpg" alt="Pic 2">
+    </a>
+
+    <a href="https://da.qq.com/index.shtml" target="_blank">
+        <img src="https://tse1.mm.bing.net/th/id/OIP.Hu2-_K3CPTYiYXTTKNSWQQAAAA?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Pic 3">
+    </a>
+
+    <a href="https://deemo.com/" target="_blank">
+        <img src="https://9to5toys.com/wp-content/uploads/sites/5/2019/06/DEEMO-iOS.jpg" alt="Pic 4">
+    </a>
+
+    
+</div>
+        </div>
+
+        <div class="right-column content-box">
+            <h2>Vedio Games</h2>
+            <a href="https://playvalorant.com/en-us/" class="img-link" target="_blank">
+                <img src="https://cdn1.epicgames.com/offer/cbd5b3d310a54b12bf3fe8c41994174f/EGS_VALORANT_RiotGames_S1_2560x1440-6608fb6c4c56c07b9a7caa34c6e6ee37" alt="Link 1">
+            </a>
+            <a href="https://www.honorofkings.com/global-en/" class="img-link" target="_blank">
+                <img src="https://tse4.mm.bing.net/th/id/OIP.Tp1bohrSxnhEsJ6w8NPOFwHaEO?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Link 2">
+            </a>
+            <a href="https://store.steampowered.com/" class="img-link" target="_blank">
+                <img src="https://whileint.com/tech/gretchen/assets/uploads/2017/01/ultimate-guide-to-steam-featured-image.jpg" alt="Link 3">
+            </a>
+        </div>
+    </div>
+ <a href="homepage.html" class="back-btn">🔙</a>
+    <script>
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let mouseX = -1000, mouseY = -1000; // 初始鼠标位置在屏幕外
+
+        // 格子配置
+        const gridSize = 40; // 格子大小
+        let cols, rows;
+        let grid = [];
+
+        // 格子类：包含物理属性
+        class Cell {
+            constructor(x, y, isBlack, baseX, baseY) {
+                this.baseX = baseX; // 原始位置 X
+                this.baseY = baseY; // 原始位置 Y
+                this.x = x; // 当前位置 X
+                this.y = y; // 当前位置 Y
+                this.vx = 0; // X轴速度
+                this.vy = 0; // Y轴速度
+                this.isBlack = isBlack;
+                this.color = isBlack ? '#111' : '#eee';
+            }
+
+            update() {
+                // 计算鼠标到格子的距离
+                const dx = mouseX - this.x;
+                const dy = mouseY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const triggerRadius = 150; // 鼠标触发半径
+
+                // 核心物理逻辑：如果鼠标靠近，施加随机力
+                if (distance < triggerRadius) {
+                    const force = (triggerRadius - distance) / triggerRadius;
+                    const angle = Math.atan2(dy, dx);
+                    // 施加一个随机方向的推力，模拟无序跳动
+                    this.vx += (Math.random() - 0.5) * force * 15;
+                    this.vy += (Math.random() - 0.5) * force * 15;
+                }
+
+                // 弹簧回复力：让格子回到初始位置
+                const springX = (this.baseX - this.x) * 0.05;
+                const springY = (this.baseY - this.y) * 0.05;
+                this.vx += springX;
+                this.vy += springY;
+
+                // 摩擦力：让运动逐渐停止
+                this.vx *= 0.92;
+                this.vy *= 0.92;
+
+                // 更新位置
+                this.x += this.vx;
+                this.y += this.vy;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                // 为了防止跳动时出现缝隙，绘制时稍微大一点点
+                ctx.fillRect(this.x - 0.5, this.y - 0.5, gridSize + 1, gridSize + 1);
+            }
+        }
+
+        // 初始化画布和网格
+        function init() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            cols = Math.ceil(width / gridSize) + 2; // 多生成一些边缘以防穿帮
+            rows = Math.ceil(height / gridSize) + 2;
+            grid = [];
+
+            for (let i = -1; i < cols; i++) {
+                for (let j = -1; j < rows; j++) {
+                    // 棋盘格逻辑
+                    const isBlack = (i + j) % 2 === 0;
+                    const x = i * gridSize;
+                    const y = j * gridSize;
+                    grid.push(new Cell(x, y, isBlack, x, y));
+                }
+            }
+        }
+
+        // 动画循环
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // 稍微填充一个底色防止缝隙闪烁
+            ctx.fillStyle = '#333';
+            ctx.fillRect(0,0,width,height);
+
+            for (const cell of grid) {
+                cell.update();
+                cell.draw();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        // 事件监听
+        window.addEventListener('resize', init);
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+        
+        // 鼠标移出窗口时，重置鼠标位置，让格子恢复平静
+        window.addEventListener('mouseout', () => {
+             mouseX = -1000;
+             mouseY = -1000;
+        });
+
+        // 启动
+        init();
+        animate();
+    </script>
+</body>
+</html>
