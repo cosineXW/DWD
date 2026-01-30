@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACG</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background-color: #000; 
+            color: #fff; 
+            font-family: sans-serif; 
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        #acgCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: -1; /* 放在最底层 */
+            background: #000;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 50px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            border-left: 5px solid #fff;
+            padding-left: 15px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        /* --- 上栏：动漫墙 (5x2 Grid) --- */
+        .anime-section {
+            margin-bottom: 100px;
+        }
+
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 强制 5 列 */
+            grid-template-rows: repeat(2, 1fr);    /* 2 行 */
+            gap: 15px; /* 图片之间的间隙 */
+        }
+
+        .anime-card {
+            aspect-ratio: 2 / 3; /* 典型的海报比例 */
+            overflow: hidden;
+            border-radius: 8px;
+            cursor: default; /* 不跳转，所以用默认指针 */
+            position: relative;
+            border: 1px solid #333;
+        }
+
+        .anime-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%); /* 平时黑白 */
+            transition: all 0.4s ease;
+        }
+
+        /* 悬停特效：变彩 + 放大 */
+        .anime-card:hover img {
+            filter: grayscale(0%);
+            transform: scale(1.1);
+        }
+
+        /* --- 下栏：Cosplay 照片墙 (交叠效果) --- */
+        .cosplay-section {
+            margin-bottom: 100px;
+            text-align: center; /* 让照片整体居中 */
+        }
+
+        .photo-wall {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 0;
+            /* 如果屏幕太小放不下7张，允许换行，但在大屏会是一排 */
+            flex-wrap: wrap; 
+        }
+
+        .photo-card {
+            width: 180px;  /* 照片宽度 */
+            height: 260px; /* 照片高度 */
+            background: #fff; /* 拍立得的白边 */
+            padding: 10px 10px 30px 10px; /* 底部留宽一点，像拍立得 */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 弹性过渡 */
+            cursor: pointer;
+            position: relative;
+            
+            /* 关键点：负边距实现交叠 */
+            margin: 0 -30px; 
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: sepia(30%); /* 微微泛黄复古感 */
+        }
+
+        /* 这里的 trick 是让偶数和奇数的照片往不同方向歪一点，制造随性感 */
+        .photo-card:nth-child(odd) { transform: rotate(-5deg) translateY(10px); }
+        .photo-card:nth-child(even) { transform: rotate(5deg) translateY(-10px); }
+
+        /* 悬停特效：浮起、变正、层级变高 */
+        .photo-card:hover {
+            transform: scale(1.2) rotate(0deg) !important; /* 强制回正并放大 */
+            z-index: 10; /* 浮在最上面 */
+            box-shadow: 0 20px 40px rgba(255,255,255,0.2);
+            margin: 0 20px; /* 悬停时把旁边的照片挤开一点，看清全貌 */
+        }
+
+        /* --- 全屏查看器 (Lightbox) --- */
+        .lightbox {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            display: none; /* 默认隐藏 */
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+        }
+        
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border: 5px solid #fff;
+            box-shadow: 0 0 30px rgba(255,255,255,0.5);
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .anime-grid {
+                grid-template-columns: repeat(2, 1fr); /* 手机上改2列 */
+            }
+            .photo-card {
+                margin: -10px -10px; /* 手机上重叠少一点 */
+                width: 120px;
+                height: 180px;
+            }
+        }
+        
+        .back-btn {
+            position: fixed; bottom: 5%; right: 3%;
+            font-size: 3rem; text-decoration: none; z-index: 100;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6));
+            transition: transform 0.3s ease;
+        }
+        .back-btn:hover { transform: scale(1.3); }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="acgCanvas"></canvas>
+
+    <div class="container">
+        
+        <section class="anime-section">
+            <h2>MY TOP 10 ANIME</h2>
+            <div class="anime-grid">
+                <div class="anime-card"><img src="https://upload.wikimedia.org/wikipedia/en/e/e5/Tokyo_Ghoul_volume_1_cover.jpg" alt="Anime"></div>
+                <div class="anime-card"><img src="https://tse2.mm.bing.net/th/id/OIP.V__Vv0q-u0VLxvr_cQ414wHaKc?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Anime"></div>
+                <div class="anime-card"><img src="https://tse3.mm.bing.net/th/id/OIP.5EL84aVUFNtANaGHx6ON2QHaLr?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Anime"></div>
+                <div class="anime-card"><img src="https://m.media-amazon.com/images/M/MV5BYTA0MTA3M2MtYTdiMy00ZGY0LTgwZjktMTE0NmVjZjk4OTE3XkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg" alt="Anime"></div>
+                <div class="anime-card"><img src="https://tse3.mm.bing.net/th/id/OIP.7ZUX6vZkIkqzdWGnr-wjzwHaJ8?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Anime"></div>
+                <div class="anime-card"><img src="https://flxt.tmsimg.com/assets/p16749713_b_v8_ak.jpg" alt="Anime"></div>
+                <div class="anime-card"><img src="https://tse4.mm.bing.net/th/id/OIP.i0_MHlFy_RdgkHfOsTnewgHaLH?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Anime"></div>
+                <div class="anime-card"><img src="https://static1.srcdn.com/wordpress/wp-content/uploads/2023/12/frieren-beyond-journeys-end-tv-poster.jpg" alt="Anime"></div>
+                <div class="anime-card"><img src="https://m.media-amazon.com/images/I/81s8xJUzWGL._SL1500_.jpg" alt="Anime"></div>
+                <div class="anime-card"><img src="https://picsum.photos/200/300?random=10" alt="Anime"></div>
+            </div>
+        </section>
+
+        <section class="cosplay-section">
+            <h2>COSPLAY GALLERY</h2>
+            <div class="photo-wall">
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="1.jpg" alt="Cosplay 1">
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="2.jpg" alt="Cosplay 2">
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="3.jpg" alt="Cosplay 3">
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="4.jpg" alt="Cosplay 4">
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="5.jpg" alt="Cosplay 5">
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="6.jpg" alt="Cosplay 6">
+                </div>
+                <div class="photo-card" onclick="openLightbox(this)">
+                    <img src="7.jpg" alt="Cosplay 7">
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <img id="lightbox-img" src="" alt="Full View">
+    </div>
+
+    <a href="homepage.html" class="back-btn">🔙</a>
+
+    <script>
+       
+        const canvas = document.getElementById('acgCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        
+        // 调整这里改变粒子数量
+        const particleCount = 60; 
+        const connectionDistance = 150; // 连线距离阈值
+
+        function initCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 1; // 慢速漂浮
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // 碰到边界反弹
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < connectionDistance) {
+                        ctx.beginPath();
+                        // 距离越近线越亮，越远越淡
+                        const opacity = 1 - (distance / connectionDistance);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.4})`; 
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            particles.forEach(p => {
+                const dx = e.clientX - p.x;
+                const dy = e.clientY - p.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 150) {
+                    // 简单的斥力效果
+                    p.x -= dx * 0.02;
+                    p.y -= dy * 0.02;
+                }
+            });
+        });
+
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        animate();
+
+
+        /**
+         * 2. 全屏看图逻辑
+         */
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+
+        function openLightbox(element) {
+            // 获取被点击的 div 里面的 img 的 src
+            const img = element.querySelector('img');
+            lightboxImg.src = img.src;
+            
+            // 显示遮罩，使用 flex 布局使其居中
+            lightbox.style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            lightbox.style.display = 'none';
+        }
+
+    </script>
+</body>
+</html>
