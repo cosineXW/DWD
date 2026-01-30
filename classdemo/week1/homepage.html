@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me</title>
+    <style>
+        /* 全局重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000; /* 最底层的黑色 */
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        /* --- 1. 顶部标题栏 (最上层，不透明) --- */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10vh; /* 占顶部 10% */
+            background-color: #000; /* 纯黑背景，挡住下面的东西 */
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* z-index 要最高，保证压住一切 */
+            z-index: 30; 
+            
+            /* 文字样式 */
+            font-size: 2.5rem; 
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #fff; /* 分割线 */
+        }
+
+        /* --- 2. 图片容器 (中间层，位置下移) --- */
+        .bg-container {
+            position: absolute;
+            /* 重点修改：从顶部 10vh 开始，高度只有 90vh */
+            top: 10vh; 
+            height: 90vh;
+            width: 100%;
+            left: 0;
+            
+            /* 图层层级：在标题下面，但在按钮下面 */
+            z-index: 10; 
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0.6;
+            filter: grayscale(100%);
+            overflow: hidden; /* 重要：防止图片超出这个 90vh 的区域 */
+        }
+
+        .bg-container img {
+            /* 重点修改：撑满它所在的容器 (即那 90vh) */
+            height: 100%; 
+            width: auto;
+            max-width: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* --- 3. 导航容器 (最上层透明区域) --- */
+        .nav-container {
+            position: absolute;
+            /* 位置和大小跟图片容器区域一样 */
+            top: 10vh;
+            height: 90vh;
+            width: 100%;
+            left: 0;
+            
+            /* 图层层级：要比图片高，才能被点击 */
+            z-index: 20;
+
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            grid-template-rows: 1fr 1fr;    
+        }
+
+        /* 按钮样式 (保持不变) */
+        .emoji-btn {
+            text-decoration: none;
+            font-size: 4rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+            animation: float 3s ease-in-out infinite;
+            justify-self: center;
+            align-self: center;
+        }
+
+        .emoji-btn:hover {
+            transform: scale(1.5);
+            text-shadow: 0 0 30px rgba(255, 255, 255, 1);
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+            animation-play-state: paused;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .emoji-btn:nth-child(1) { animation-delay: 0s; }
+        .emoji-btn:nth-child(2) { animation-delay: 0.5s; }
+        .emoji-btn:nth-child(3) { animation-delay: 1s; }
+        .emoji-btn:nth-child(4) { animation-delay: 1.5s; }
+
+        @media (max-width: 768px) {
+            .emoji-btn { font-size: 2.5rem; }
+            .top-bar { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="top-bar">
+        About Me
+    </h1>
+
+    <div class="bg-container">
+        <img src="me.jpg" alt="Background">
+    </div>
+
+    <nav class="nav-container">
+        <a href="acg.html" class="emoji-btn">🧚💄</a>
+        <a href="https://hickory-trombone-b22.notion.site/Renna-s-Homepage-2621841bc7a18051b455c1a0b7a23199" class="emoji-btn">💬</a>
+        <a href="music.html" class="emoji-btn">🎵</a>
+        <a href="games.html" class="emoji-btn">🎮</a>
+    </nav>
+
+</body>
+</html>
