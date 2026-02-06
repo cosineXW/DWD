@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shanghai Interactive Poster Final</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            width: 100vw; height: 100vh;
+            background-color: #111;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        .poster-container {
+            width: min(100vw, 160vh);
+            aspect-ratio: 16 / 10;
+            position: relative;
+            background-color: #000;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            overflow: hidden;
+            container-type: inline-size; 
+        }
+
+        .slice-item {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+        }
+
+        .slice-item:hover {
+            transform: scale(1.02); /* 悬停放大 */
+            z-index: 20; 
+        }
+
+        .slice-img {
+            width: 100%; height: 100%;
+            object-fit: cover; 
+            display: block;
+            filter: grayscale(30%); 
+            transition: filter 0.4s;
+        }
+        
+        .slice-item:hover .slice-img { filter: grayscale(0%); }
+
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* 半透明黑底 */
+            opacity: 0; 
+            transition: opacity 0.3s ease;
+            display: block;
+        }
+
+        .slice-item:hover .overlay { opacity: 1; }
+
+        .text-box {
+            position: absolute; /* 绝对定位，靠百分比控制位置 */
+            /* 限制最大宽度，防止文字太长撞到别的地方 */
+            max-width: 45%; 
+            min-width: 200px;
+            pointer-events: auto; /* 确保链接可点 */
+        }
+
+        .text-box h2 {
+            font-size: clamp(14px, 3.5cqw, 40px); /* 随海报宽度自动变大 */
+            color: #fff;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #00f0ff; /* 赛博蓝线条 */
+            display: inline-block;
+            padding-bottom: 4px;
+            white-space: nowrap;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .links {
+            display: flex; flex-direction: column; gap: 4px;
+        }
+
+        .links a {
+            color: #ddd;
+            text-decoration: none;
+            font-size: clamp(10px, 1.6cqw, 18px);
+            transition: all 0.2s;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        }
+        .links a:hover { color: #fff; text-decoration: underline; }
+
+
+        .item-1 .links {
+    display: grid;
+    
+    
+    grid-template-columns: auto auto; 
+   
+    gap: 8px 10px; 
+    
+    text-align: left; 
+}
+        
+        .item-1 .links a {
+            white-space: nowrap; /* 防止文字换行 */
+        }
+
+
+        .align-right  { text-align: right; }
+        .align-right .links { align-items: flex-end; } /* 链接靠右 */
+
+        .align-left   { text-align: left; }
+        .align-left .links { align-items: flex-start; } /* 链接靠左 */
+
+        .align-center { text-align: center; }
+        .align-center .links { align-items: center; } /* 链接居中 */
+
+
+        
+
+        .item-1 { clip-path: polygon(50% 50%, 70% 0%, 100% 0%, 100% 20%); }
+        .item-1 .text-box {
+            top: 5%;    
+            right: 3%; 
+        }
+
+        /* 2. HISTORY (右侧) */
+        .item-2 { clip-path: polygon(50% 50%, 100% 20%, 100% 70%); }
+        .item-2 .text-box {
+            top: 40%;   
+            right: 3%;  
+        }
+
+        /* 3. TASTE (右下角) */
+        .item-3 { clip-path: polygon(50% 50%, 100% 70%, 100% 100%, 80% 100%); }
+        .item-3 .text-box {
+            bottom: 5%; /* 离底 5% */
+            right: 3%;  /* 离右 3% */
+        }
+
+        /* 4. THE BUND (正下方) */
+        .item-4 { clip-path: polygon(50% 50%, 80% 100%, 20% 100%); }
+        .item-4 .text-box {
+            bottom: 3%; 
+            left: 50%; 
+            transform: translateX(-50%);
+        }
+
+        /* 5. SPEED (左下角) */
+        .item-5 { clip-path: polygon(50% 50%, 20% 100%, 0% 100%, 0% 60%); }
+        .item-5 .text-box {
+            bottom: 5%; 
+            left: 3%;   
+        }
+
+        /* 6. ART & FUTURE (左侧) */
+        .item-6 { clip-path: polygon(50% 50%, 0% 60%, 0% 0%); }
+        .item-6 .text-box {
+            top: 30%;  
+            left: 3%; 
+        }
+
+        /* 7. ACG WORLD (左上/正上) */
+        .item-7 { clip-path: polygon(50% 50%, 0% 0%, 70% 0%); }
+        .item-7 .text-box {
+            top: 4%;    
+            left: 30%;  
+        }
+
+        /* --- 中心标题 --- */
+        .center-title {
+            position: absolute;
+            width: 22%; aspect-ratio: 1/1; 
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 50; 
+            
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.9);
+            box-shadow: 0 0 30px rgba(0,0,0,0.4);
+            
+            display: flex; justify-content: center; align-items: center;
+            pointer-events: none;
+        }
+        .center-title h1 {
+            color: #222; 
+            font-size: clamp(1.5rem, 4cqw, 4rem); 
+            font-weight: 900; 
+            text-align: center;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="poster-container">
+
+        <div class="slice-item item-1">
+            <img class="slice-img" style="object-position: top right; transform: scale(0.5); transform-origin: top right;" src="https://images.chinahighlights.com/allpicture/2016/07/3651d7f0f9814af892697264.jpg" alt="Shanghai Stats">
+            <div class="overlay">
+                <div class="text-box align-right">
+                    <h2>KEY STATS</h2>
+                    <div class="links">
+                        <a href="https://en.wikipedia.org/wiki/Shanghai#Administrative_divisions">16 Districts</a>
+                        <a >105 Manhattans in size</a>
+                        <a href="#">Econ: No.1 GDP</a>
+                        <a href="#">Pop: 24+ Million</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slice-item item-2">
+            <img class="slice-img" src="https://pic2.zhimg.com/v2-7e8e2ecccf707bedf93fdc0a7a21acf3_1440w.jpg?source=172ae18b" alt="History">
+            <div class="overlay">
+                <div class="text-box align-right">
+                    <h2>HISTORY</h2>
+                    <div class="links">
+                        <a href="https://en.wikipedia.org/wiki/Reform_and_opening_up">Reform & Opening</a>
+                        <a href="https://en.wikipedia.org/wiki/Shikumen">Shikumen Style</a>
+                        <a href="https://en.wikipedia.org/wiki/Longtang">Longtang Alleys</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slice-item item-3">
+            <img class="slice-img" style="object-position: bottom right; transform: scale(0.5); transform-origin: bottom right;" src="https://th.bing.com/th/id/R.949a2fbf1f3c807aba970ef74889093e?rik=A7q0V8Cn3%2b7iWw&riu=http%3a%2f%2fp1.ifengimg.com%2ffck%2f2018_12%2fd8e98208107a4d9_w1080_h864.jpg&ehk=K%2fp4tdsUp4QElJhzvU%2b9iSBdm3jF3hJRC0tRr52OHOQ%3d&risl=&pid=ImgRaw&r=0" alt="Food">
+            <div class="overlay">
+                <div class="text-box align-right">
+                    <h2>TASTE</h2>
+                    <div class="links">
+                        <a href="https://urbanchinatravelogue.com/best-shanghai-coffee-guide/">Coffee Culture</a>
+                        <a href="https://en.wikipedia.org/wiki/Shanghai_cuisine">Benbang Cuisine</a>
+                        <a href="https://urbanchinatravelogue.com/best-shanghai-milk-tea-guide/">Milk Tea Craze</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slice-item item-4">
+            <img class="slice-img" style="object-position: bottom ; transform: scale(0.6); transform-origin: bottom ;"src="https://th.bing.com/th/id/R.963387deab55b9f40e168d04701cd0bf?rik=ZXcq67XU%2bE8A8A&pid=ImgRaw&r=0" alt="The Bund">
+            <div class="overlay">
+                <div class="text-box align-center">
+                    <h2>THE BUND</h2>
+                    <div class="links">
+                        <a href="https://en.wikipedia.org/wiki/Lujiazui">Lujiazui Matrix</a>
+                        <a href="https://en.wikipedia.org/wiki/The_Bund">The Skyline</a>
+                        <a href="https://www.travelchinaguide.com/attraction/shanghai/oriental_pearl.htm">Oriental Pearl</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slice-item item-5">
+            <img class="slice-img" style="object-position: bottom left; transform: scale(0.478); transform-origin: bottom left;" src="https://tse4.mm.bing.net/th/id/OIP.MjFbZjeu_wOPaqObggzvUgHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Speed">
+            <div class="overlay">
+                <div class="text-box align-left">
+                    <h2>SPEED</h2>
+                    <div class="links">
+                        <a href="https://en.wikipedia.org/wiki/Shanghai_Metro">World's #1 Metro</a>
+                        <a href="https://www.chinadiscovery.com/shanghai/shanghai-maglev.html">Maglev (431 km/h)</a>
+                        <a href="https://english.shanghai.gov.cn/en-PaymentsInShanghai/index.html">Cashless Pay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slice-item item-6">
+            <img class="slice-img" style="object-position: 0% 0%; transform: scale(0.6); transform-origin: 0% 0%;"  src="https://th.bing.com/th/id/R.a2a472ed0571b49a091f4c17d6580e52?rik=sb60y82oKmBO1A&riu=http%3a%2f%2fn.sinaimg.cn%2fsh%2fcrawl%2f257%2fw550h507%2f20201217%2f69d4-kfnaptt5096304.png&ehk=X64BLGiNl1T8uRGEmaA7hGOPOvE01x57oA4YnA1RYNY%3d&risl=&pid=ImgRaw&r=0" alt="Art">
+            <div class="overlay">
+                <div class="text-box align-left">
+                    <h2>ART & FUTURE</h2>
+                    <div class="links">
+                        <a href="http://westbundshanghai.com/">West Bund Art</a>
+                        <a href="https://chinatripedia.com/shanghai-astronomy-museum-ticket-opening-hours-highlights-and-tips/">Astronomy Museum</a>
+                        <a href="https://museumofartpd.org.cn/en/index">Museum of Art Pudong</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slice-item item-7">
+            <img class="slice-img" style="object-position: top ; transform: scale(0.6); transform-origin: 10% -50%;"  src="https://q6.itc.cn/images01/20240922/d5baf9dfe537444bbc4c3e81c233c9dc.jpeg" alt="ACG">
+            <div class="overlay">
+                <div class="text-box align-left">
+                    <h2>ACG WORLD</h2>
+                    <div class="links">
+                        <a href="https://english.shanghai.gov.cn/en-ShoppingCenters/20231217/b2a15a3b91e04920910a62da526eba3d.html">Bailian ZX Center</a>
+                        <a href="https://www.bing.com/images/search?q=chinajoy&form=HDRSC3&first=1">ChinaJoy / BW</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="center-title">
+            <h1>SHANG<br>HAI</h1>
+        </div>
+
+    </div>
+
+</body>
+</html>
