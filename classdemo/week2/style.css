@@ -1,191 +1,235 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            width: 100vw; height: 100vh;
-            background-color: #111;
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        }
-
-        .poster-container {
-            width: min(100vw, 160vh);
-            aspect-ratio: 16 / 10;
-            position: relative;
-            background-color: #000;
-            box-shadow: 0 0 50px rgba(0,0,0,0.9);
-            overflow: hidden;
-            container-type: inline-size; 
-        }
-
-        .slice-item {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            overflow: hidden;
-        }
-
-        .slice-item:hover {
-            transform: scale(1.02); /* 悬停放大 */
-            z-index: 20; 
-        }
-
-        .slice-img {
-            width: 100%; height: 100%;
-            object-fit: cover; 
-            display: block;
-            filter: grayscale(30%); 
-            transition: filter 0.4s;
-        }
-        
-        .slice-item:hover .slice-img { filter: grayscale(0%); }
-
-        .overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); /* 半透明黑底 */
-            opacity: 0; 
-            transition: opacity 0.3s ease;
-            display: block;
-        }
-
-        .slice-item:hover .overlay { opacity: 1; }
-
-        .text-box {
-            position: absolute; /* 绝对定位，靠百分比控制位置 */
-            /* 限制最大宽度，防止文字太长撞到别的地方 */
-            max-width: 45%; 
-            min-width: 200px;
-            pointer-events: auto; /* 确保链接可点 */
-        }
-
-        .text-box h2 {
-            font-size: clamp(14px, 3.5cqw, 40px); /* 随海报宽度自动变大 */
-            color: #fff;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            border-bottom: 2px solid #00f0ff; /* 赛博蓝线条 */
-            display: inline-block;
-            padding-bottom: 4px;
-            white-space: nowrap;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
-
-        .links {
-            display: flex; flex-direction: column; gap: 4px;
-        }
-
-        .links a {
-            color: #ddd;
-            text-decoration: none;
-            font-size: clamp(10px, 1.6cqw, 18px);
-            transition: all 0.2s;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-        }
-        .links a:hover { color: #fff; text-decoration: underline; }
-
-
-        .item-1 .links {
-    display: grid;
-    
-    
-    grid-template-columns: auto auto; 
-   
-    gap: 8px 10px; 
-    
-    text-align: left; 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-        
-        .item-1 .links a {
-            white-space: nowrap; /* 防止文字换行 */
-        }
 
+body {
+  width: 100vw;
+  height: 100vh;
+  background-color: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 
-        .align-right  { text-align: right; }
-        .align-right .links { align-items: flex-end; } /* 链接靠右 */
+.poster-container {
+  width: min(100vw, 160vh);
+  aspect-ratio: 16 / 10;
+  position: relative;
+  background-color: #000;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+  container-type: inline-size;
+}
 
-        .align-left   { text-align: left; }
-        .align-left .links { align-items: flex-start; } /* 链接靠左 */
+.slice-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+}
 
-        .align-center { text-align: center; }
-        .align-center .links { align-items: center; } /* 链接居中 */
+.slice-item:hover {
+  transform: scale(1.02); /* 悬停放大 */
+  z-index: 20;
+}
 
+.slice-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(30%);
+  transition: filter 0.4s;
+}
 
-        
+.slice-item:hover .slice-img {
+  filter: grayscale(0%);
+}
 
-        .item-1 { clip-path: polygon(50% 50%, 70% 0%, 100% 0%, 100% 20%); }
-        .item-1 .text-box {
-            top: 5%;    
-            right: 3%; 
-        }
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* 半透明黑底 */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: block;
+}
 
-        /* 2. HISTORY (右侧) */
-        .item-2 { clip-path: polygon(50% 50%, 100% 20%, 100% 70%); }
-        .item-2 .text-box {
-            top: 40%;   
-            right: 3%;  
-        }
+.slice-item:hover .overlay {
+  opacity: 1;
+}
 
-        /* 3. TASTE (右下角) */
-        .item-3 { clip-path: polygon(50% 50%, 100% 70%, 100% 100%, 80% 100%); }
-        .item-3 .text-box {
-            bottom: 5%; /* 离底 5% */
-            right: 3%;  /* 离右 3% */
-        }
+.text-box {
+  position: absolute;
+  max-width: 45%;
+  min-width: 200px;
+  pointer-events: auto; /* 确保链接可点 */
+}
 
-        /* 4. THE BUND (正下方) */
-        .item-4 { clip-path: polygon(50% 50%, 80% 100%, 20% 100%); }
-        .item-4 .text-box {
-            bottom: 3%; 
-            left: 50%; 
-            transform: translateX(-50%);
-        }
+.text-box h2 {
+  font-size: clamp(14px, 3.5cqw, 40px); /* 随海报宽度自动变大 */
+  color: #fff;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #00f0ff; /* 赛博蓝线条 */
+  display: inline-block;
+  padding-bottom: 4px;
+  white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
 
-        /* 5. SPEED (左下角) */
-        .item-5 { clip-path: polygon(50% 50%, 20% 100%, 0% 100%, 0% 60%); }
-        .item-5 .text-box {
-            bottom: 5%; 
-            left: 3%;   
-        }
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
-        /* 6. ART & FUTURE (左侧) */
-        .item-6 { clip-path: polygon(50% 50%, 0% 60%, 0% 0%); }
-        .item-6 .text-box {
-            top: 30%;  
-            left: 3%; 
-        }
+.links a {
+  color: #ddd;
+  text-decoration: none;
+  font-size: clamp(10px, 1.6cqw, 18px);
+  transition: all 0.2s;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+.links a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
 
-        /* 7. ACG WORLD (左上/正上) */
-        .item-7 { clip-path: polygon(50% 50%, 0% 0%, 70% 0%); }
-        .item-7 .text-box {
-            top: 4%;    
-            left: 30%;  
-        }
+.item-1 .links {
+  display: grid;
 
-        /* --- 中心标题 --- */
-        .center-title {
-            position: absolute;
-            width: 22%; aspect-ratio: 1/1; 
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 50; 
-            
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            border-radius: 50%;
-            border: 4px solid rgba(255,255,255,0.9);
-            box-shadow: 0 0 30px rgba(0,0,0,0.4);
-            
-            display: flex; justify-content: center; align-items: center;
-            pointer-events: none;
-        }
-        .center-title h1 {
-            color: #222; 
-            font-size: clamp(1.5rem, 4cqw, 4rem); 
-            font-weight: 900; 
-            text-align: center;
-            letter-spacing: -1px;
-            line-height: 1;
-        }
+  grid-template-columns: auto auto;
 
+  gap: 8px 10px;
+
+  text-align: left;
+}
+
+.item-1 .links a {
+  white-space: nowrap;
+}
+
+.align-right {
+  text-align: right;
+}
+.align-right .links {
+  align-items: flex-end;
+} /* 链接靠右 */
+
+.align-left {
+  text-align: left;
+}
+.align-left .links {
+  align-items: flex-start;
+} /* 链接靠左 */
+
+.align-center {
+  text-align: center;
+}
+.align-center .links {
+  align-items: center;
+} /* 链接居中 */
+
+.item-1 {
+  clip-path: polygon(50% 50%, 70% 0%, 100% 0%, 100% 20%);
+}
+.item-1 .text-box {
+  top: 5%;
+  right: 3%;
+}
+
+/* 2. HISTORY (右侧) */
+.item-2 {
+  clip-path: polygon(50% 50%, 100% 20%, 100% 70%);
+}
+.item-2 .text-box {
+  top: 40%;
+  right: 3%;
+}
+
+/* 3. TASTE (右下角) */
+.item-3 {
+  clip-path: polygon(50% 50%, 100% 70%, 100% 100%, 80% 100%);
+}
+.item-3 .text-box {
+  bottom: 5%; /* 离底 5% */
+  right: 3%; /* 离右 3% */
+}
+
+/* 4. THE BUND (正下方) */
+.item-4 {
+  clip-path: polygon(50% 50%, 80% 100%, 20% 100%);
+}
+.item-4 .text-box {
+  bottom: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* 5. SPEED (左下角) */
+.item-5 {
+  clip-path: polygon(50% 50%, 20% 100%, 0% 100%, 0% 60%);
+}
+.item-5 .text-box {
+  bottom: 5%;
+  left: 3%;
+}
+
+/* 6. ART & FUTURE (左侧) */
+.item-6 {
+  clip-path: polygon(50% 50%, 0% 60%, 0% 0%);
+}
+.item-6 .text-box {
+  top: 30%;
+  left: 3%;
+}
+
+/* 7. ACG WORLD (左上/正上) */
+.item-7 {
+  clip-path: polygon(50% 50%, 0% 0%, 70% 0%);
+}
+.item-7 .text-box {
+  top: 4%;
+  left: 30%;
+}
+
+/* --- 中心标题 --- */
+.center-title {
+  position: absolute;
+  width: 22%;
+  aspect-ratio: 1/1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+.center-title h1 {
+  color: #222;
+  font-size: clamp(1.5rem, 4cqw, 4rem);
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: -1px;
+  line-height: 1;
+}

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Games</title>
     <style>
-        /* 全局重置 */
         * {
             margin: 0;
             padding: 0;
@@ -19,7 +18,6 @@
             font-family: 'Microsoft YaHei', sans-serif;
         }
 
-        /* --- 背景 Canvas 样式 --- */
         #bgCanvas {
             position: fixed;
             top: 0;
@@ -30,7 +28,6 @@
             background-color: #111; /* 兜底背景色 */
         }
 
-        /* --- 主内容容器 --- */
         .main-container {
             position: relative;
             z-index: 1; /* 在 Canvas 之上 */
@@ -42,7 +39,6 @@
             min-height: 80vh;
         }
 
-        /* --- 通用半透明容器样式 --- */
         .content-box {
             /* 半透明白色背景，让下方的动画可见 */
             background: rgba(255, 255, 255, 0.15);
@@ -90,7 +86,6 @@
     width: 100%;
 }
 
-/* 新增：现在 a 标签是排版的主角 */
 .image-row-five a {
     flex: 1;        /* 平均分配空间 */
     width: 0;       /* 关键：强制均分，防止图片原始尺寸撑开 */

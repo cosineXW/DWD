@@ -87,7 +87,6 @@
             justify-content: center;
             align-items: center;
             padding: 50px 0;
-            /* 如果屏幕太小放不下7张，允许换行，但在大屏会是一排 */
             flex-wrap: wrap; 
         }
 
@@ -112,7 +111,6 @@
             filter: sepia(30%); /* 微微泛黄复古感 */
         }
 
-        /* 这里的 trick 是让偶数和奇数的照片往不同方向歪一点，制造随性感 */
         .photo-card:nth-child(odd) { transform: rotate(-5deg) translateY(10px); }
         .photo-card:nth-child(even) { transform: rotate(5deg) translateY(-10px); }
 
@@ -124,7 +122,6 @@
             margin: 0 20px; /* 悬停时把旁边的照片挤开一点，看清全貌 */
         }
 
-        /* --- 全屏查看器 (Lightbox) --- */
         .lightbox {
             position: fixed;
             top: 0; left: 0;
