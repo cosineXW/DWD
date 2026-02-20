@@ -1,0 +1,37 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>nyu dining hall bulletin</title>
+        <!-- not in class -- adding script to use js -->
+         <script src="main.js"></script>
+    </head>
+    <body>
+        <div id="main-title" tabindex="-1">
+				<h1 class="page-title">
+					
+						Dining on Campus
+					
+				</h1>
+		</div>
+        <h2>    nyu dining hall bulletin</h2>
+        <!-- method is the type of request to be sent to the app -->
+         <!-- action is the location of the request to be sent to the app -->
+        <form method="POST" action="/sign">
+            <input type="text" name="guestname" placeholder="your username">
+            <input type="text" name="message" placeholder="what to share" style="width: 300px;">
+            <input type="submit" value="submit">
+        </form>
+    </body>
+</html>
+<style>
+    #main-title {
+        background-color: #57068c; 
+        padding: 20px 30px; 
+        margin-bottom: 20px; 
+    }
+    .page-title {
+        color: white; 
+        font-weight: bold; 
+        margin: 0; 
+    }
+</style>
