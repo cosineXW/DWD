@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fakegram</title>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="loading-div">
+    <img src="loading.gif" width="150" alt="loading">
+</div>
+
+<div class="browser-window">
+    <div class="title-bar">
+        <span>Fakegram</span>
+        <div class="title-bar-buttons"><span>_</span><span>□</span><span>X</span></div>
+    </div>
+    <div class="menu-bar">
+        <span class="fake-link">File</span> &nbsp; <span class="fake-link">Edit</span> &nbsp; <span class="fake-link">View</span>
+    </div>
+    <div class="address-bar">
+        Address: <input type="text" value="http://123.456.789/fakegram.html" readonly>
+    </div>
+
+    <div class="web-content">
+        <div class="logo">F A K E G R A M</div>
+        <p>Welcome, Guest - [<span class="fake-link">Log out</span>]</p>
+
+        <div class="action-boxes">
+            <div class="action-box" id="real-post-btn" onclick="togglePostForm()">
+                <h3>BUILD A PAGE</h3>
+                <p>(Click to Start)</p>
+            </div>
+            <div class="action-box"><br><br><h3 class="yellow-title">EDIT PAGES</h3><p>Manage your site</p></div>
+            <div class="action-box"><br><br><h3 class="yellow-title">UPLOAD FILES</h3><p>Import HTML</p></div>
+        </div>
+
+        <div id="post-form-container">
+            <h3 class="radar-title">Create New Page</h3>
+            <form action="/submit" method="POST" onsubmit="showSubmitLoading()">
+                <label class="form-label">Your ID:</label>
+                <input type="text" name="username" class="full-width-input" required>
+                <label class="form-label">Content:</label>
+                <textarea name="content" class="full-width-input" rows="4" required></textarea>
+                <button type="submit" class="full-width-btn">Post</button>
+                <button type="button" class="full-width-btn mt-5" onclick="togglePostForm()">CANCEL</button>
+            </form>
+        </div>
+
+        <div class="main-layout">
+            <div class="left-col">
+                <div class="section-title">Explore Neighborhoods</div>
+                <br>
+                <div id="posts-container"></div>
+            </div>
+
+            <div class="right-col">
+                <div class="radar-box">
+                    <h3 class="radar-title">User Radar</h3>
+                    <input type="text" id="search-input" placeholder="Enter ID..." class="full-width-input">
+                    <button onclick="searchUser()" class="full-width-btn">Search</button>
+                    <button onclick="resetHome()" class="full-width-btn mt-5">Back to Home</button>
+                </div>
+                <div class="radar-box">
+                    <h3 class="radar-title">Active Neighbors</h3>
+                    <div id="neighbor-list" class="radar-names-container">
+                        <i>Scanning network...</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="comment.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+ body { background-color: #008080; margin: 20px; font-family: 'MS Sans Serif', Tahoma, Geneva, sans-serif; }
+        .browser-window { background-color: #c0c0c0; border-top: 2px solid #ffffff; border-left: 2px solid #ffffff; border-bottom: 2px solid #000000; border-right: 2px solid #000000; width: 800px; margin: 0 auto; box-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+        .title-bar { background: linear-gradient(90deg, #000080, #1084d0); color: white; padding: 3px 5px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; }
+        .title-bar-buttons span { background: #c0c0c0; color: black; border-top: 1px solid #fff; border-left: 1px solid #fff; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 0 4px; margin-left: 2px; cursor: default; }
+        .menu-bar, .address-bar { padding: 5px; font-size: 13px; border-bottom: 1px solid #888; }
+        .address-bar input { width: 80%; font-family: 'MS Sans Serif'; }
+        
+        .web-content { background-color: #ffffff; border: 2px inset #c0c0c0; height: 600px; overflow-y: scroll; padding: 20px; font-family: "Times New Roman", Times, serif; }
+        .logo { color: blue; font-size: 36px; font-weight: bold; text-align: center; margin-bottom: 20px; font-family: "Comic Sans MS", cursive, sans-serif; }
+        .fake-link { color: blue; text-decoration: underline; cursor: default; }
+        
+        .action-boxes { display: flex; justify-content: space-between; background-color: #003399; color: white; padding: 10px; margin-bottom: 20px; }
+        .action-box { text-align: center; width: 30%; font-family: Arial, sans-serif; }
+        .yellow-title { color: yellow; margin-top: 0; margin-bottom: 5px;}
+        #real-post-btn { cursor: pointer; background-color: #ffcc00; color: #003399; font-weight: bold; border: 2px outset #ffffff; padding: 10px; }
+        #real-post-btn:active { border: 2px inset #ffffff; }
+
+        .main-layout { display: flex; gap: 20px; }
+        .left-col { flex: 2; }
+        .right-col { flex: 1; background-color: #ccffcc; padding: 10px; border: 1px solid #009900; }
+        .section-title { background-color: #003399; color: white; padding: 5px; font-family: Arial, sans-serif; font-weight: bold; }
+
+        .post-item { border-bottom: 2px dashed #999; padding: 15px 0; margin-bottom: 15px; }
+        .post-author { font-weight: bold; color: #000080; font-size: 18px; }
+        .post-time { font-size: 12px; color: gray; font-weight: normal; }
+        .post-content { margin: 10px 0; font-size: 16px; }
+        .post-ai-comments { font-size: 14px; color: #333; background-color: #f0f0f0; padding: 10px; border: 1px solid #ccc; }
+        .single-comment { margin-bottom: 5px; }
+
+        #loading-div { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(192, 192, 192, 0.7); z-index: 9999; justify-content: center; align-items: center; }
+        .active-loading { display: flex !important; }
+
+        .radar-box { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px dashed #009900; }
+        .radar-title { color: #009900; margin-top: 0; }
+        .full-width-input { width: 100%; margin-bottom: 10px; box-sizing: border-box; font-family: 'MS Sans Serif'; }
+        .full-width-btn { width: 100%; cursor: pointer; font-weight: bold; }
+        .mt-5 { margin-top: 5px; }
+        .radar-names-container { font-size: 13px; line-height: 1.6; }
+        .radar-name { cursor: pointer; margin-right: 8px; }
+
+        #post-form-container { display: none; background-color: #f0f0f0; padding: 15px; border: 2px inset #c0c0c0; margin-bottom: 20px; }
+        .show-form { display: block !important; }
+        .form-label { font-weight: bold; display: block; margin-bottom: 5px; }
